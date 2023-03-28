@@ -12,7 +12,8 @@ class Game:
         self.height = 800
         self.white_colour = (255, 255, 255)
         self.clock = pygame.time.Clock()
-
+        self.level = 1.0
+        self.reset_map()
         # background = pygame.image.load("assets/background.png")
         self.background = GameObject(0, 0, self.width, self.height, "assets/background.png")
 
@@ -59,10 +60,33 @@ class Game:
     def check_if_collided(self):
         for enemy in self.enemies:
             if self.detecting_collision(self.player, enemy):
+                self.level = 1.0
                 return True
         if self.detecting_collision(self.player, self.treasure):
+            self.level += 0.5
             return True
         return False
+
+    def reset_map(self):
+        self.player = Player(375, 750, 50, 50, 'assets/player.png', 10)
+
+        speed = 5 + (self.level * 5)
+
+        if self.level >= 4.0:
+            self.enemies = [
+                Enemy(0, 600, 50, 50, 'assets/enemy.png', speed),
+                Enemy(750, 400, 50, 50, 'assets/enemy.png', speed),
+                Enemy(0, 200, 50, 50, 'assets/enemy.png', speed)
+            ]
+        elif self.level >= 2.0:
+            self.enemies = [
+                Enemy(0, 600, 50, 50, 'assets/enemy.png', speed),
+                Enemy(750, 400, 50, 50, 'assets/enemy.png', speed)
+            ]
+        else:
+            self.enemies = [
+                Enemy(0, 600, 50, 50, 'assets/enemy.png', speed),
+            ]
 
     def run_game_loop(self):
         player_direction = 0
@@ -88,6 +112,6 @@ class Game:
             self.draw_objects()
 
             if self.check_if_collided():
-                return
+                self.reset_map()
 
             self.clock.tick(60)
